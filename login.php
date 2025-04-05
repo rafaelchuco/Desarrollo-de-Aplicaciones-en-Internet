@@ -1,5 +1,5 @@
 <?php
-require '../funciones.php';
+require 'funciones.php';
 $usser = "correo@correo.com";
 $pass = "123456";
 $errores = [];
