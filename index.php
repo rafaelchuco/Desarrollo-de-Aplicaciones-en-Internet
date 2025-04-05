@@ -44,36 +44,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lista de Tareas</title>
-    <style>
-        .completada {
-            text-decoration: line-through;
-            color: gray;
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Lista de Tareas</h1>
+    <div class="container">
+        <h1>Lista de Tareas</h1>
 
-    <!-- Formulario para agregar tareas -->
-    <form method="POST">
-        <input type="text" name="nombre_tarea" placeholder="Nombre de la tarea" required>
-        <button type="submit" name="agregar">Agregar Tarea</button>
-    </form>
+        <!-- Formulario para agregar tareas -->
+        <form method="POST">
+            <input type="text" name="nombre_tarea" placeholder="Nombre de la tarea" required>
+            <button type="submit" name="agregar">Agregar Tarea</button>
+        </form>
 
-    <h2>Tareas</h2>
-    <ul>
-        <?php foreach ($_SESSION['tareas'] as $indice => $tarea): ?>
-            <li class="<?= $tarea['completada'] ? 'completada' : '' ?>">
-                <?= htmlspecialchars($tarea['nombre']) ?>
-                <form method="POST" style="display: inline;">
-                    <input type="hidden" name="indice" value="<?= $indice ?>">
-                    <button type="submit" name="eliminar">Eliminar</button>
-                    <?php if (!$tarea['completada']): ?>
-                        <button type="submit" name="completar">Marcar como completada</button>
-                    <?php endif; ?>
-                </form>
-            </li>
-        <?php endforeach; ?>
-    </ul>
+        <h2>Tareas</h2>
+        <ul>
+            <?php foreach ($_SESSION['tareas'] as $indice => $tarea): ?>
+                <li class="<?= $tarea['completada'] ? 'completada' : '' ?>">
+                    <?= htmlspecialchars($tarea['nombre']) ?>
+                    <form method="POST" style="display: inline;">
+                        <input type="hidden" name="indice" value="<?= $indice ?>">
+                        <button type="submit" name="eliminar">Eliminar</button>
+                        <?php if (!$tarea['completada']): ?>
+                            <button type="submit" name="completar">Marcar como completada</button>
+                        <?php endif; ?>
+                    </form>
+                </li>
+            <?php endforeach; ?>
+        </ul>
+    </div>
 </body>
 </html>
