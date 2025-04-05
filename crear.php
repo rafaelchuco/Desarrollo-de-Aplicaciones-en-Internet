@@ -1,5 +1,5 @@
 <?php
-require '../funciones.php';
+require 'funciones.php';
 $auth = islog();
 if  (!$auth){
     header('Location: login.php');
