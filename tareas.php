@@ -5,7 +5,10 @@ $auth = islog();
 if  (!$auth){
     header('Location: login.php');
 }
+
+
 $tareas = $_SESSION['tareas'] ?? false;
+
 $val = $_GET['val'] ?? null;
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $indice = filter_var($_POST['indice'],FILTER_SANITIZE_NUMBER_INT);
