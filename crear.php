@@ -27,5 +27,5 @@ endforeach;
 <form method="post">
     <label>Tarea</label>
     <input name="tarea" type="text" placeholder="Ingrese su tarea">
-    <input type="submit">
+    <input type="submit" value="Agregar">
 </form>
