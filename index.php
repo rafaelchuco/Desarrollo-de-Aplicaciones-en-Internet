@@ -1,39 +1,41 @@
-<!-- filepath: /home/rafael/Tecsup/ciclo3/php/tareas.php -->
 <?php
-session_start();
+require 'funciones.php';
+$usser = "correo@correo.com";
+$pass = "123456";
+$errores = [];
 
-// Inicializar el array de tareas si no existe
-if (!isset($_SESSION['tareas'])) {
-    $_SESSION['tareas'] = [];
-}
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $uss = $_POST['usuario'] ?? '';
+    $pswd = $_POST['password'] ?? '';
+    $ussValid = filter_var($uss, FILTER_VALIDATE_EMAIL);
 
-// Función para agregar una tarea
-function agregarTarea($nombreTarea) {
-    $_SESSION['tareas'][] = ['nombre' => $nombreTarea, 'completada' => false];
-}
-
-// Función para eliminar una tarea
-function eliminarTarea($indice) {
-    unset($_SESSION['tareas'][$indice]);
-    $_SESSION['tareas'] = array_values($_SESSION['tareas']); // Reindexar el array
-}
-
-// Función para marcar una tarea como completada
-function completarTarea($indice) {
-    $_SESSION['tareas'][$indice]['completada'] = true;
-}
-
-// Manejo de las acciones del formulario
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (isset($_POST['agregar'])) {
-        $nombreTarea = trim($_POST['nombre_tarea']);
-        if (!empty($nombreTarea)) {
-            agregarTarea($nombreTarea);
+    if (!$uss && !$pswd) {
+        $errores[] = "Ingrese las credenciales";
+    } else {
+        if (!$uss) {
+            $errores[] = "Ingrese usuario";
         }
-    } elseif (isset($_POST['eliminar'])) {
-        eliminarTarea($_POST['indice']);
-    } elseif (isset($_POST['completar'])) {
-        completarTarea($_POST['indice']);
+        if (!$pswd) {
+            $errores[] = "Ingrese password";
+        }
+        if ($uss && !$ussValid) {
+            $errores[] = "Ingrese un correo válido";
+        }
+    }
+
+    if (!$errores) {
+        if ($uss === $usser) {
+            if ($pswd === $pass) {
+                session_start();
+                $_SESSION['auth'] = true;
+                header('Location: tareas.php');
+                exit;
+            } else {
+                $errores[] = 'Datos incorrectos';
+            }
+        } else {
+            $errores[] = 'Datos incorrectos';
+        }
     }
 }
 ?>
@@ -43,34 +45,61 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lista de Tareas</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Formulario</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
 </head>
 <body>
-    <div class="container">
-        <h1>Lista de Tareas</h1>
 
-        <!-- Formulario para agregar tareas -->
-        <form method="POST">
-            <input type="text" name="nombre_tarea" placeholder="Nombre de la tarea" required>
-            <button type="submit" name="agregar">Agregar Tarea</button>
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 100vh;">
+    <div class="w-100" style="max-width: 400px;">
+        
+        <form method="post" action="index.php" class="border p-4 rounded shadow">
+
+            <h2 class="mb-4 text-center">Iniciar sesión</h2>    
+
+            <div class="mb-3">
+                <label class="form-label">Usuario</label>
+                <input name="usuario" type="text" class="form-control" placeholder="Ingrese su correo">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Password</label>
+                <input name="password" type="password" class="form-control" placeholder="Password">
+            </div>
+
+            <div class="mb-3">
+                <input type="submit" class="btn btn-primary w-100" value="Ingresar">
+            </div>
         </form>
+    </div>
+</div>
 
-        <h2>Tareas</h2>
-        <ul>
-            <?php foreach ($_SESSION['tareas'] as $indice => $tarea): ?>
-                <li class="<?= $tarea['completada'] ? 'completada' : '' ?>">
-                    <?= htmlspecialchars($tarea['nombre']) ?>
-                    <form method="POST" style="display: inline;">
-                        <input type="hidden" name="indice" value="<?= $indice ?>">
-                        <button type="submit" name="eliminar">Eliminar</button>
-                        <?php if (!$tarea['completada']): ?>
-                            <button type="submit" name="completar">Marcar como completada</button>
-                        <?php endif; ?>
-                    </form>
-                </li>
+<!-- ALERTA FLOTANTE -->
+<?php if (!empty($errores)): ?>
+    <div id="alertaError" class="alert alert-danger position-fixed top-0 end-0 m-4 fade show" role="alert" style="z-index: 1050;">
+        <button type="button" class="btn-close float-end" aria-label="Cerrar" onclick="document.getElementById('alertaError').remove();"></button>
+        <ul class="mb-0">
+            <?php foreach ($errores as $error): ?>
+                <li><?php echo $error; ?></li>
             <?php endforeach; ?>
         </ul>
     </div>
+<?php endif; ?>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+
+<!-- Script para cerrar automáticamente el alert -->
+<script>
+    setTimeout(function() {
+        const alerta = document.getElementById('alertaError');
+        if (alerta) {
+            alerta.classList.remove('show');
+            alerta.classList.add('fade');
+            setTimeout(() => alerta.remove(), 400); // lo elimina del DOM
+        }
+    }, 4000); // 4 segundos
+</script>
+
 </body>
 </html>
